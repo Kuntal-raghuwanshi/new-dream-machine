@@ -8,7 +8,7 @@ import { PROFILE } from '../constants/profile';
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+const API_URL = process.env.REACT_APP_API_URL || '';
 
 const ChatWindow = () => {
     const [messages, setMessages] = useState([]);
@@ -16,7 +16,6 @@ const ChatWindow = () => {
     const [isTyping, setIsTyping] = useState(false);
     const [error, setError] = useState(null);
     const [loadingHistory, setLoadingHistory] = useState(true);
-    const [retryCount, setRetryCount] = useState(0);
     const [showScrollDown, setShowScrollDown] = useState(false);
     const messagesEndRef = useRef(null);
     const chatContainerRef = useRef(null);
@@ -68,11 +67,7 @@ const ChatWindow = () => {
         };
 
         loadChatHistory();
-    }, [retryCount]);
-
-    const handleRetry = () => {
-        setRetryCount(prev => prev + 1);
-    };
+    }, []);
 
     const handleScroll = () => {
         if (chatContainerRef.current) {
