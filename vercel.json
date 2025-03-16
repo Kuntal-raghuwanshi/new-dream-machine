@@ -1,0 +1,42 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "frontend/server/server.js",
+            "use": "@vercel/node"
+        },
+        {
+            "src": "frontend/package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "frontend/build",
+                "outputDirectory": "frontend/build"
+            }
+        }
+    ],
+    "rewrites": [
+        { 
+            "source": "/api/(.*)", 
+            "destination": "/frontend/server/server.js"
+        },
+        {
+            "source": "/static/(.*)",
+            "destination": "/frontend/build/static/$1"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/frontend/build/index.html"
+        }
+    ],
+    "headers": [
+        {
+            "source": "/static/(.*)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=31536000, immutable"
+                }
+            ]
+        }
+    ]
+} 
