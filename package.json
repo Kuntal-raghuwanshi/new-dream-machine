@@ -10,8 +10,8 @@
     "server": "nodemon frontend/server/server.js",
     "client": "cd frontend && npm start",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build": "cd frontend && npm install --legacy-peer-deps && npm run build",
-    "vercel-build": "cd frontend && npm install --force && npm run build"
+    "build": "cd frontend && npm install --force && npm run build",
+    "vercel-build": "cd frontend && npm install --force && npm run build && mv build ../build"
   },
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
