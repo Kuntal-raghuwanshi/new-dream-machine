@@ -55,18 +55,17 @@ app.use((req, res, next) => {
 if (process.env.NODE_ENV === 'production') {
     console.log('Serving static files from:', path.join(__dirname, '../../build'));
     app.use(express.static(path.join(__dirname, '../../build')));
-    
-    // Catch-all route for SPA in production
-    app.get('*', (req, res) => {
-        // Log the request path for debugging
-        console.log('Catch-all route hit:', req.path);
-        if (req.path.startsWith('/api/')) {
-            // Let API routes fall through to their handlers
-            return next();
-        }
-        res.sendFile(path.join(__dirname, '../../build/index.html'));
-    });
 }
+
+// API routes
+app.use('/api', (req, res, next) => {
+    console.log('API request:', {
+        path: req.path,
+        method: req.method,
+        body: req.body
+    });
+    next();
+});
 
 // MongoDB connection
 let cachedDb = null;
@@ -304,6 +303,17 @@ app.get('/api/chat/history', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch chat history' });
     }
 });
+
+// Catch-all route for SPA in production
+if (process.env.NODE_ENV === 'production') {
+    app.get('*', (req, res, next) => {
+        if (req.path.startsWith('/api/')) {
+            return next();
+        }
+        console.log('Serving index.html for path:', req.path);
+        res.sendFile(path.join(__dirname, '../../build/index.html'));
+    });
+}
 
 // Start the server
 const port = process.env.PORT || 3001;
