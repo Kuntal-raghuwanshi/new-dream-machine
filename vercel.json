@@ -9,19 +9,18 @@
             "src": "frontend/package.json",
             "use": "@vercel/static-build",
             "config": {
-                "distDir": "build",
-                "buildCommand": "cd frontend && npm install && npm run build"
+                "distDir": "frontend/build"
             }
         }
     ],
     "rewrites": [
         { 
             "source": "/api/(.*)",
-            "destination": "frontend/server/server.js"
+            "destination": "/frontend/server/server.js"
         },
         {
             "source": "/(.*)",
-            "destination": "/build/$1"
+            "destination": "/frontend/build/$1"
         }
     ],
     "headers": [
