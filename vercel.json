@@ -12,23 +12,25 @@
             "src": "frontend/package.json",
             "use": "@vercel/static-build",
             "config": {
-                "distDir": "build",
-                "nodeVersion": "18.x"
+                "distDir": "frontend/build"
             }
         }
     ],
-    "rewrites": [
-        { 
-            "source": "/api/(.*)",
-            "destination": "/frontend/server/server.js"
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "frontend/server/server.js"
         },
         {
-            "source": "/static/(.*)",
-            "destination": "/build/static/$1"
+            "src": "/static/(.*)",
+            "dest": "frontend/build/static/$1"
         },
         {
-            "source": "/(.*)",
-            "destination": "/build/index.html"
+            "handle": "filesystem"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "frontend/build/index.html"
         }
     ],
     "headers": [

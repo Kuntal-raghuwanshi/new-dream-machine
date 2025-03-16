@@ -10,6 +10,7 @@ console.log('Server initialization starting...');
 console.log('Current working directory:', process.cwd());
 console.log('__dirname:', __dirname);
 console.log('Environment:', process.env.NODE_ENV);
+console.log('Vercel URL:', process.env.VERCEL_URL);
 
 // Load environment variables based on environment
 if (process.env.NODE_ENV === 'production') {
@@ -25,9 +26,9 @@ const app = express();
 const corsOptions = {
     origin: process.env.NODE_ENV === 'production'
         ? [
-            /\.vercel\.app$/, // Allow all vercel.app subdomains
+            /\.vercel\.app$/,
             process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
-            'http://localhost:3000' // Allow local development
+            'http://localhost:3000'
           ].filter(Boolean)
         : 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -46,18 +47,15 @@ app.use((req, res, next) => {
         method: req.method,
         path: req.path,
         query: req.query,
-        headers: req.headers
+        headers: req.headers,
+        url: req.url,
+        baseUrl: req.baseUrl,
+        originalUrl: req.originalUrl
     });
     next();
 });
 
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-    console.log('Serving static files from:', path.join(__dirname, '../../build'));
-    app.use(express.static(path.join(__dirname, '../../build')));
-}
-
-// API routes
+// API routes should be before static files
 app.use('/api', (req, res, next) => {
     console.log('API request:', {
         path: req.path,
@@ -66,6 +64,13 @@ app.use('/api', (req, res, next) => {
     });
     next();
 });
+
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+    const buildPath = path.join(__dirname, '../../frontend/build');
+    console.log('Serving static files from:', buildPath);
+    app.use(express.static(buildPath));
+}
 
 // MongoDB connection
 let cachedDb = null;
@@ -304,14 +309,14 @@ app.get('/api/chat/history', async (req, res) => {
     }
 });
 
-// Catch-all route for SPA in production
+// Catch-all route for SPA in production - this should be AFTER API routes
 if (process.env.NODE_ENV === 'production') {
     app.get('*', (req, res, next) => {
         if (req.path.startsWith('/api/')) {
             return next();
         }
         console.log('Serving index.html for path:', req.path);
-        res.sendFile(path.join(__dirname, '../../build/index.html'));
+        res.sendFile(path.join(__dirname, '../../frontend/build/index.html'));
     });
 }
 
