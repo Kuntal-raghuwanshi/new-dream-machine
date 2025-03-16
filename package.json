@@ -2,13 +2,16 @@
   "name": "chat-lama",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "start": "node frontend/server/server.js",
     "server": "nodemon frontend/server/server.js",
     "client": "cd frontend && npm start",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "build": "cd frontend && npm install --legacy-peer-deps && npm run build",
-    "vercel-build": "cd frontend && npm install --legacy-peer-deps && npm run build"
+    "vercel-build": "cd frontend && npm install --force && npm run build"
   },
   "dependencies": {
     "@react-oauth/google": "^0.12.1",

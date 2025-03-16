@@ -2,6 +2,9 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "18.x"
+  },
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
     "axios": "^1.6.7",
@@ -14,7 +17,8 @@
     "react-dom": "^18.2.0",
     "react-icons": "^5.0.1",
     "react-router-dom": "^6.30.0",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "yocto-queue": "^1.0.0"
   },
   "scripts": {
     "start": "set PORT=3000 && react-scripts start",
