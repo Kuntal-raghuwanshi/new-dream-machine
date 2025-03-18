@@ -27,23 +27,38 @@
             }
         },
         {
-            "src": "/static/(.*)",
-            "dest": "/build/static/$1",
+            "src": "/static/css/[^/]+\\.css",
             "headers": {
-                "cache-control": "public, max-age=31536000, immutable"
-            }
+                "Content-Type": "text/css"
+            },
+            "dest": "/build/static/css/$1"
         },
         {
-            "handle": "filesystem"
+            "src": "/static/js/[^/]+\\.js",
+            "headers": {
+                "Content-Type": "application/javascript"
+            },
+            "dest": "/build/static/js/$1"
+        },
+        {
+            "src": "/manifest.json",
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "dest": "/build/manifest.json"
+        },
+        {
+            "src": "/(.*)\\.(.+)",
+            "dest": "/build/$1.$2"
         },
         {
             "src": "/(.*)",
             "dest": "/build/index.html",
             "headers": {
+                "Cache-Control": "no-cache, no-store, must-revalidate",
                 "x-content-type-options": "nosniff",
                 "x-frame-options": "DENY",
-                "x-xss-protection": "1; mode=block",
-                "referrer-policy": "strict-origin-when-cross-origin"
+                "x-xss-protection": "1; mode=block"
             }
         }
     ]
