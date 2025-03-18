@@ -8,7 +8,19 @@ import { PROFILE } from '../constants/profile';
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-const API_URL = process.env.REACT_APP_API_URL || window.location.origin;
+// Construct API URL correctly
+const getApiUrl = () => {
+    const apiUrl = process.env.REACT_APP_API_URL;
+    if (!apiUrl) return window.location.origin;
+    
+    // Check if it's already a full URL
+    if (apiUrl.startsWith('http')) return apiUrl;
+    
+    // If it's just the domain from VERCEL_URL, construct the full URL
+    return `https://${apiUrl}`;
+};
+
+const API_URL = getApiUrl();
 console.log('Build Environment:', {
     NODE_ENV: process.env.NODE_ENV,
     API_URL: API_URL,

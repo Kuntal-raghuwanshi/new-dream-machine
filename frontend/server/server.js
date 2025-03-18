@@ -127,7 +127,7 @@ const openai = new OpenAI({
 });
 
 // Health check endpoint with detailed diagnostics
-app.get('/api/health', async (req, res) => {
+app.get(['/api/health', '/health'], async (req, res) => {
     try {
         console.log('Health check initiated');
         console.log('Server environment:', {
@@ -135,7 +135,8 @@ app.get('/api/health', async (req, res) => {
             cwd: process.cwd(),
             dirname: __dirname,
             mongodb_uri_exists: !!process.env.MONGODB_URI,
-            openai_key_exists: !!process.env.OPENAI_API_KEY
+            openai_key_exists: !!process.env.OPENAI_API_KEY,
+            vercel_url: process.env.VERCEL_URL
         });
 
         const db = await connectToDatabase();
@@ -145,19 +146,14 @@ app.get('/api/health', async (req, res) => {
             status: 'ok',
             timestamp: new Date().toISOString(),
             environment: process.env.NODE_ENV,
+            vercel_url: process.env.VERCEL_URL,
             mongodb: {
                 connected: true,
-                ping: pingResult.ok === 1 ? 'successful' : 'failed',
-                uri_exists: !!process.env.MONGODB_URI
-            },
-            openai: {
-                api_key_exists: !!process.env.OPENAI_API_KEY
+                ping: pingResult.ok === 1 ? 'successful' : 'failed'
             },
             server: {
                 node_version: process.version,
-                platform: process.platform,
-                cwd: process.cwd(),
-                dirname: __dirname
+                uptime: process.uptime()
             }
         };
         
@@ -169,8 +165,7 @@ app.get('/api/health', async (req, res) => {
             status: 'error',
             error: {
                 message: error.message,
-                type: error.name,
-                code: error.code
+                type: error.name
             },
             timestamp: new Date().toISOString()
         });
