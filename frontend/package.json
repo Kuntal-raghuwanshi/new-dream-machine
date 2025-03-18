@@ -25,8 +25,8 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "node server/server.js",
     "client": "react-scripts start",
-    "build": "CI=false GENERATE_SOURCEMAP=false react-scripts build",
-    "vercel-build": "CI=false GENERATE_SOURCEMAP=false react-scripts build",
+    "build": "INLINE_RUNTIME_CHUNK=false CI=false GENERATE_SOURCEMAP=false react-scripts build",
+    "vercel-build": "INLINE_RUNTIME_CHUNK=false CI=false GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

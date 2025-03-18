@@ -9,7 +9,13 @@ axios.defaults.headers.common['Content-Type'] = 'application/json';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 const API_URL = process.env.REACT_APP_API_URL || window.location.origin;
-console.log('API URL:', API_URL, 'Environment:', process.env.NODE_ENV);
+console.log('Build Environment:', {
+    NODE_ENV: process.env.NODE_ENV,
+    API_URL: API_URL,
+    VERCEL_URL: process.env.VERCEL_URL,
+    REACT_APP_API_URL: process.env.REACT_APP_API_URL,
+    window_location: window.location.origin
+});
 
 const ChatWindow = () => {
     const [messages, setMessages] = useState([]);
@@ -21,6 +27,37 @@ const ChatWindow = () => {
     const messagesEndRef = useRef(null);
     const chatContainerRef = useRef(null);
     const [connectionStatus, setConnectionStatus] = useState('checking');
+    const [initialLoading, setInitialLoading] = useState(true);
+    const [initError, setInitError] = useState(null);
+
+    useEffect(() => {
+        const initializeApp = async () => {
+            try {
+                setInitialLoading(true);
+                setError(null);
+                
+                // Test if we can load static assets
+                const testImage = new Image();
+                testImage.src = '/static/media/your-image.png'; // Replace with any image from your build
+                testImage.onerror = () => {
+                    console.error('Failed to load static assets');
+                    setInitError('Static assets failed to load');
+                };
+
+                // Test API connection
+                const response = await axios.get(`${API_URL}/api/health`);
+                console.log('Health check response:', response.data);
+                
+                setInitialLoading(false);
+            } catch (error) {
+                console.error('Initialization error:', error);
+                setInitError(error.message);
+                setInitialLoading(false);
+            }
+        };
+
+        initializeApp();
+    }, []);
 
     useEffect(() => {
         const checkBackendConnection = async () => {
@@ -196,6 +233,41 @@ const ChatWindow = () => {
             setIsTyping(false);
         }
     };
+
+    if (initialLoading) {
+        return (
+            <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Loading application...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (initError) {
+        return (
+            <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+                <div className="text-center max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+                    <div className="text-red-500 text-xl mb-4">⚠️ Application Error</div>
+                    <p className="text-gray-600 mb-4">{initError}</p>
+                    <div className="bg-gray-100 p-4 rounded text-left">
+                        <p className="text-sm font-mono break-all">
+                            Environment: {process.env.NODE_ENV}<br/>
+                            API URL: {API_URL}<br/>
+                            Location: {window.location.origin}
+                        </p>
+                    </div>
+                    <button 
+                        onClick={() => window.location.reload()} 
+                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                        Retry
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-[#F5F2EC] min-h-screen">
