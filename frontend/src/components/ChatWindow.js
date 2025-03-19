@@ -50,11 +50,15 @@ const ChatWindow = () => {
                 
                 // Test if we can load static assets
                 const testImage = new Image();
-                testImage.src = '/static/media/your-image.png'; // Replace with any image from your build
                 testImage.onerror = () => {
                     console.error('Failed to load static assets');
                     setInitError('Static assets failed to load');
                 };
+                testImage.onload = () => {
+                    console.log('Static assets loaded successfully');
+                };
+                // Use absolute path for static assets
+                testImage.src = `${window.location.origin}/static/media/your-image.png`;
 
                 // Test API connection
                 const response = await axios.get(`${API_URL}/api/health`);

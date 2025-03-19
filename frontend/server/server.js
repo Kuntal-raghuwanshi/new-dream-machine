@@ -67,8 +67,25 @@ app.use('/api', (req, res, next) => {
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
-    const buildPath = path.join(__dirname, '../../frontend/build');
+    const buildPath = path.join(__dirname, '../../build');
     console.log('Serving static files from:', buildPath);
+    
+    // Serve static files with proper MIME types
+    app.use('/static', express.static(path.join(buildPath, 'static'), {
+        maxAge: '1y',
+        etag: true,
+        setHeaders: (res, path) => {
+            if (path.endsWith('.js')) {
+                res.setHeader('Content-Type', 'application/javascript');
+            } else if (path.endsWith('.css')) {
+                res.setHeader('Content-Type', 'text/css');
+            } else if (path.endsWith('.png')) {
+                res.setHeader('Content-Type', 'image/png');
+            }
+        }
+    }));
+
+    // Serve other static files
     app.use(express.static(buildPath));
 }
 

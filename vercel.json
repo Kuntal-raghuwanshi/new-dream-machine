@@ -12,7 +12,8 @@
             "src": "package.json",
             "use": "@vercel/static-build",
             "config": {
-                "distDir": "build"
+                "distDir": "build",
+                "outputDirectory": "build"
             }
         }
     ],
@@ -26,8 +27,12 @@
             "destination": "frontend/server/server.js"
         },
         {
+            "source": "/static/(.*)",
+            "destination": "/build/static/$1"
+        },
+        {
             "source": "/(.*)",
-            "destination": "/build/$1"
+            "destination": "/build/index.html"
         }
     ],
     "headers": [
@@ -37,6 +42,37 @@
                 {
                     "key": "Cache-Control",
                     "value": "public, max-age=31536000, immutable"
+                },
+                {
+                    "key": "Content-Type",
+                    "value": "text/plain; charset=utf-8"
+                }
+            ]
+        },
+        {
+            "source": "/static/media/(.*\\.png)",
+            "headers": [
+                {
+                    "key": "Content-Type",
+                    "value": "image/png"
+                }
+            ]
+        },
+        {
+            "source": "/static/css/(.*\\.css)",
+            "headers": [
+                {
+                    "key": "Content-Type",
+                    "value": "text/css"
+                }
+            ]
+        },
+        {
+            "source": "/static/js/(.*\\.js)",
+            "headers": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/javascript"
                 }
             ]
         },
