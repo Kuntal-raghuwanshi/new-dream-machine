@@ -27,6 +27,10 @@
             "destination": "frontend/server/server.js"
         },
         {
+            "source": "/images/(.*)",
+            "destination": "/build/images/$1"
+        },
+        {
             "source": "/static/(.*)",
             "destination": "/build/static/$1"
         },
@@ -36,6 +40,15 @@
         }
     ],
     "headers": [
+        {
+            "source": "/images/(.*)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=31536000, immutable"
+                }
+            ]
+        },
         {
             "source": "/static/(.*)",
             "headers": [
