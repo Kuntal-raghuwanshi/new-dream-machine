@@ -45,7 +45,7 @@ const LandingPage = () => {
                                 onClick={() => setShowChat(true)}
                                 className="bg-[#FF6B6B] text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-[#FF5252] transition-colors"
                             >
-                                Talk to Kiara
+                                Talk to Kuvy
                             </button>
                         </div>
                     </div>
@@ -117,7 +117,7 @@ const LandingPage = () => {
                                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
                                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
                                     </div>
-                                    <span className="text-[13px] text-gray-500">Kiara is typing...</span>
+                                    <span className="text-[13px] text-gray-500">Kuvy is typing...</span>
                                 </div>
                             </div>
                             
@@ -170,7 +170,7 @@ const LandingPage = () => {
                             onClick={() => setShowChat(true)}
                             className="bg-[#FF6B6B] text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-[#FF5252] transition-colors w-full max-w-xs"
                         >
-                            Talk to Kiara
+                            Talk to Kuvy
                         </button>
                     </div>
                 </div>

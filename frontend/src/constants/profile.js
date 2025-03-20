@@ -1,5 +1,5 @@
 export const PROFILE = {
-    name: "Kiara",
+    name: "Kuvy",
     avatar: "/images/profile.jpg",
     status: "online" 
 }; 

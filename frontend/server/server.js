@@ -189,7 +189,7 @@ app.get(['/api/health', '/health'], async (req, res) => {
     }
 });
 
-const SYSTEM_PROMPT = `You are Kiara, a friendly chatbot who MUST respond with MULTIPLE messages in Hinglish.
+const SYSTEM_PROMPT = `You are Kuvy, a friendly chatbot who MUST respond with MULTIPLE messages in Hinglish.
 
 YOUR RESPONSES MUST FOLLOW THIS EXACT FORMAT WITH 2-3 MESSAGES:
 
@@ -217,7 +217,8 @@ IMPORTANT RULES:
 2. Each message must be short (max 15 words)
 3. Use [MESSAGE] tag before each message
 4. Write in Hinglish (mix of Hindi & English)
-5. Be playful and caring
+5. Be playful and caring and loving
+6. Use respectiful tone in all messages
 
 DO NOT write anything else. ONLY write messages in the format shown above.`;
 
@@ -252,8 +253,17 @@ function formatAssistantResponse(response) {
     return messages;
 }
 
+// Function to get client IP address
+function getClientIP(req) {
+    return req.headers['x-forwarded-for']?.split(',')[0].trim() || 
+           req.headers['x-real-ip'] || 
+           req.connection.remoteAddress || 
+           'unknown';
+}
+
 app.post('/api/chat', async (req, res) => {
     const message = req.body.message?.trim();
+    const clientIP = getClientIP(req);
     
     if (!message) {
         return res.status(400).json({ error: 'Message is required' });
@@ -280,15 +290,20 @@ app.post('/api/chat', async (req, res) => {
         
         // Format and ensure multiple messages
         const messages = formatAssistantResponse(assistant_response);
-            
-        // Store each message separately in MongoDB
-        for (const msg of messages) {
-            await chatsCollection.insertOne({
-                user_message: message,
-                assistant_message: msg,
+        
+        // Create a new chat document with the new schema
+        const chatDocument = {
+            user_message: message,
+            assistant_messages: messages.map(msg => ({
+                message: msg,
                 timestamp: current_time
-            });
-        }
+            })),
+            user_ip: clientIP,
+            timestamp: current_time
+        };
+        
+        // Store in MongoDB
+        await chatsCollection.insertOne(chatDocument);
         
         res.json({
             messages: messages,
@@ -304,17 +319,53 @@ app.get('/api/chat/history', async (req, res) => {
     try {
         const db = await connectToDatabase();
         const chatsCollection = db.collection('chats');
+        const clientIP = getClientIP(req);
         
         const weekAgo = new Date();
         weekAgo.setDate(weekAgo.getDate() - 7);
         
+        // Query with the new schema and IP filtering
         const chats = await chatsCollection
-            .find({ timestamp: { $gte: weekAgo } }, { projection: { _id: 0 } })
+            .find(
+                { 
+                    timestamp: { $gte: weekAgo },
+                    user_ip: clientIP
+                },
+                { projection: { _id: 0 } }
+            )
             .sort({ timestamp: -1 })
             .limit(50)
             .toArray();
             
-        res.json(chats);
+        // Transform the data for frontend compatibility
+        const transformedChats = chats.flatMap(chat => {
+            // Create an array of alternating user and assistant messages
+            const messages = [];
+            
+            // Add user message
+            messages.push({
+                type: 'user',
+                content: chat.user_message,
+                timestamp: chat.timestamp,
+                status: 'read'
+            });
+            
+            // Add all assistant messages
+            chat.assistant_messages.forEach(assistantMsg => {
+                messages.push({
+                    type: 'assistant',
+                    content: assistantMsg.message,
+                    timestamp: assistantMsg.timestamp
+                });
+            });
+            
+            return messages;
+        });
+        
+        // Sort all messages by timestamp
+        transformedChats.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            
+        res.json(transformedChats);
     } catch (error) {
         console.error('Error fetching chat history:', error);
         res.status(500).json({ error: 'Failed to fetch chat history' });

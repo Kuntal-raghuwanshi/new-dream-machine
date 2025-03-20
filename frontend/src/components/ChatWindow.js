@@ -103,25 +103,8 @@ const ChatWindow = () => {
                 const response = await axios.get(`${API_URL}/api/chat/history`);
                 console.log('Chat history received:', response.data);
                 
-                // Convert chat history to messages and sort by timestamp
-                const formattedHistory = response.data
-                    .map(chat => ([
-                        {
-                            type: 'user',
-                            content: chat.user_message,
-                            timestamp: new Date(chat.timestamp).toISOString(),
-                            status: 'read'  // Set all previous messages to read status
-                        },
-                        {
-                            type: 'assistant',
-                            content: chat.assistant_message,
-                            timestamp: new Date(chat.timestamp).toISOString()
-                        }
-                    ]))
-                    .flat()
-                    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-                setMessages(formattedHistory);
+                // The response.data is already in the correct format with alternating user and assistant messages
+                setMessages(response.data);
             } catch (error) {
                 console.error('Error details:', {
                     message: error.message,
@@ -328,7 +311,7 @@ const ChatWindow = () => {
                             </div>
                         ) : messages.length === 0 ? (
                             <div className="flex flex-col justify-center items-center h-full text-gray-500">
-                                <p className="text-lg mb-2">Welcome to Iris Chat!</p>
+                                <p className="text-lg mb-2">Welcome to Kuvy Chat!</p>
                                 <p className="text-sm">Start a conversation by sending a message.</p>
                             </div>
                         ) : (

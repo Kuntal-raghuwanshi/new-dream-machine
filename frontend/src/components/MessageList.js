@@ -30,7 +30,7 @@ const TypingIndicator = () => (
             <div className="w-1.5 h-1.5 bg-black/20 rounded-full animate-pulse delay-75 mx-1"></div>
             <div className="w-1.5 h-1.5 bg-black/20 rounded-full animate-pulse delay-150"></div>
         </div>
-        <span className="text-[13px] text-gray-500">Kiara is typing</span>
+        <span className="text-[13px] text-gray-500">Kuvy is typing</span>
     </div>
 );
 
